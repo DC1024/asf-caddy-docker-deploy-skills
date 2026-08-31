@@ -7,9 +7,9 @@ bot 会因 Akamai 400 反复 Disconnected。**
 ## 1. 背景与原理
 
 **为什么 ASF 需要反代？**
-- CN 网络对 `store.steampowered.com`、`steamcommunity.com` 做 **SNI 检测阻断**（直连返回 000），
+- 部分网络环境对 `store.steampowered.com`、`steamcommunity.com` 做 **SNI 检测阻断**（直连返回 000），
   但 `cdn.steamstatic.com`、`help.steampowered.com` 可通。
-- ASF 启动要先通过 HTTP API 拿 CM 服务器列表（走反代），再直连 CM（steamserver.net:443，CN 可直连）。
+- ASF 启动要先通过 HTTP API 拿 CM 服务器列表（走反代），再直连 CM（steamserver.net:443，多数网络可直连）。
 
 **asfcn 一体化镜像原理**
 - entrypoint 把 `steamcommunity.com`、`store.steampowered.com`、`api.steampowered.com`、
@@ -30,7 +30,7 @@ bot 会因 Akamai 400 反复 Disconnected。**
 ```bash
 docker pull registry.cn-hangzhou.aliyuncs.com/sffxzzp/asfcn:latest
 ```
-amd64 约 386MB，阿里云源 CN 友好。
+amd64 约 386MB，走阿里云源，拉取顺畅。
 
 ### 3.2 准备目录与配置
 宿主机建数据目录，从旧环境（如有）复制：
