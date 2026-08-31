@@ -86,7 +86,7 @@ header_up Host {host}
 
 在支持 WorkBuddy Skill 的 AI 助手对话里说：
 
-> 「在我的 NAS（192.168.x.x）上部署 ASF，用 asfcn 镜像，bot 名叫 DC」
+> 「在我的 NAS（192.168.x.x）上部署 ASF，用 asfcn 镜像，bot 名叫 mybot」
 
 AI 会自动加载本 Skill 并完成全部部署。
 
