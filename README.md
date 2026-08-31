@@ -123,4 +123,6 @@ docker exec asf caddy reload --config /app/Caddyfile
 
 ## 许可证
 
-与上游 [sffxzzp/asfcn](https://github.com/sffxzzp/asfcn) 保持一致：上游项目未声明开源协议，本仓库亦不另行声明。本仓库仅做 Skill 化封装与 Caddyfile 修复，不重新分发任何上游二进制或镜像。
+本仓库（Skill 内容：SKILL.md、文档、Caddyfile、docker-compose 模板、脚本）采用 **MIT License**，详见 [LICENSE](LICENSE)。
+
+> 说明：本仓库是独立的 Skill 化封装作品，不含上游 [sffxzzp/asfcn](https://github.com/sffxzzp/asfcn) 的任何代码或二进制，仅在其镜像部署流程基础上做封装与 Caddyfile 修复。MIT 许可仅适用于本仓库的原创内容，不覆盖 asfcn 镜像本身（asfcn 未声明开源协议）。
