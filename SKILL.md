@@ -1,6 +1,6 @@
 ---
 name: asf-caddy-deploy
-description: 在任意 Docker 环境（NAS、服务器）部署 ArchiSteamFarm（ASF）挂卡工具，并内置 Steam 社区与 GitHub 反代以绕过 CN 网络 SNI 阻断。使用 sffxzzp/asfcn 一体化镜像（ASF + Caddy）。本 skill 应在用户要求部署 ASF、在 NAS/服务器上跑 ASF 挂卡、或需要 steam302/steamcommunity_302 反代使 ASF 正常工作时使用。包含修复版 Caddyfile（解决 Akamai 400 导致的 bot 反复断连）、docker-compose 模板、远程 SSH 文件传输脚本、完整部署与排障参考。
+description: 在任意 Docker 环境（NAS、服务器）部署 ArchiSteamFarm（ASF）挂卡工具，并内置 Steam 社区与 GitHub 反代以规避受限网络下的 SNI 阻断。使用 sffxzzp/asfcn 一体化镜像（ASF + Caddy）。本 skill 应在用户要求部署 ASF、在 NAS/服务器上跑 ASF 挂卡、或需要 steam302/steamcommunity_302 反代使 ASF 正常工作时使用。包含修复版 Caddyfile（解决 Akamai 400 导致的 bot 反复断连）、docker-compose 模板、远程 SSH 文件传输脚本、完整部署与排障参考。
 agent_created: true
 ---
 
@@ -9,7 +9,7 @@ agent_created: true
 ## Overview
 
 在 Docker 环境（NAS/服务器）部署 ArchiSteamFarm 挂卡工具，并用 Caddy 反代 Steam 社区/GitHub，
-绕过 CN 网络的 SNI 阻断（`store.steampowered.com`、`steamcommunity.com` 直连返回 000）。
+绕过受限网络的 SNI 阻断（`store.steampowered.com`、`steamcommunity.com` 直连返回 000）。
 核心方案：`sffxzzp/asfcn` 一体化镜像，**必须持久化修复版 Caddyfile**，否则 bot 因
 Akamai 400 反复 Disconnected。
 
@@ -23,7 +23,7 @@ Akamai 400 反复 Disconnected。
 ## 部署流程
 
 ### Step 1 — 拉取镜像
-从阿里云源拉取（amd64，约 386MB，CN 友好）：
+从阿里云源拉取（amd64，约 386MB，国内可达）：
 ```bash
 docker pull registry.cn-hangzhou.aliyuncs.com/sffxzzp/asfcn:latest
 ```
