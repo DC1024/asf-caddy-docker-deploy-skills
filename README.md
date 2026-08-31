@@ -11,8 +11,6 @@
 > 1. 把部署流程封装成可被 AI Agent 调用的 **WorkBuddy Skill**；
 > 2. 沉淀一份修复版 `Caddyfile`（解决 asfcn 内置配置导致 Akamai 400 / bot 断连的问题）；
 > 3. 补齐 docker-compose 模板、SSH 远程脚本与完整排障指南。
->
-> **致敬上游**：所有核心能力归功于 [`sffxzzp/asfcn`](https://github.com/sffxzzp/asfcn) 作者 🙏。
 
 ---
 
