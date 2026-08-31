@@ -86,7 +86,7 @@ See the "Key Gotchas" section of `references/deployment-guide.md`. The `assets/C
 
 Say to a WorkBuddy Skill-aware assistant:
 
-> "Deploy ASF on my NAS (192.168.x.x) with the asfcn image, bot name DC"
+> "Deploy ASF on my NAS (192.168.x.x) with the asfcn image, bot name mybot"
 
 The AI loads this Skill and completes the whole deployment automatically.
 
