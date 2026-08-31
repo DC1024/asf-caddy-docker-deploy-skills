@@ -123,4 +123,6 @@ This repository only does Skill packaging and a Caddyfile fix on top of the proj
 
 ## License
 
-Consistent with the upstream [sffxzzp/asfcn](https://github.com/sffxzzp/asfcn): the upstream project declares no open-source license, so this repository does not declare one either. This repository only does Skill packaging and a Caddyfile fix; it does not redistribute any upstream binaries or images.
+This repository (Skill content: SKILL.md, docs, Caddyfile, docker-compose template, scripts) is licensed under the **MIT License** — see [LICENSE](LICENSE).
+
+> Note: this repository is an independent Skill-packaging work. It contains no code or binaries from the upstream [sffxzzp/asfcn](https://github.com/sffxzzp/asfcn); it only wraps the asfcn image's deployment flow and ships a Caddyfile fix. The MIT license applies solely to this repository's original content and does not cover the asfcn image itself (asfcn declares no open-source license).
