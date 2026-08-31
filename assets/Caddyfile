@@ -1,0 +1,46 @@
+# asfcn 反代 Caddyfile — 修复版
+# 关键修复: (rev) 段必须设置 `header_up Host {host}`, 否则 Caddy 用上游 Akamai
+# edgesuite 域名做 Host 头, 导致 Akamai 返回 400, ASF 的 bot 反复 Disconnected。
+#
+# 部署方式:
+#   bind mount 到容器 /app/Caddyfile (镜像 entrypoint 会覆盖内置文件, 必须挂载持久化)
+#   修改后执行: docker exec <container> caddy reload --config /app/Caddyfile
+
+(rev) {
+	lb_policy round_robin
+	transport http {
+		tls
+		tls_insecure_skip_verify
+	}
+	header_up Host {host}
+}
+
+# Steam 社区 / 商店 / API → Akamai edgesuite 反代 (绕过 CN SNI 阻断)
+https://steamcommunity.com, https://www.steamcommunity.com, https://cdn.steamcommunity.com, https://store.steampowered.com, https://api.steampowered.com {
+	import sign
+	reverse_proxy * https://steamuserimages-a.akamaihd.net.edgesuite.net https://steamstore-a.akamaihd.net.edgesuite.net https://eaassets-a.akamaihd.net.edgesuite.net https://steamcommunity-a.akamaihd.net.edgesuite.net {
+		import rev
+	}
+}
+
+# GitHub Pages / usercontent / raw → fastly 反代
+https://github.io, https://*.github.io, https://githubusercontent.com, https://*.githubusercontent.com, https://raw.githubusercontent.com {
+	import sign
+	reverse_proxy * https://github.map.fastly.net {
+		import rev
+	}
+}
+
+# gist / github.com 主站 → GitHub 直连 IP
+https://gist.github.com, https://github.com {
+	reverse_proxy * https://140.82.113.3 https://140.82.113.4 https://20.205.243.166 https://20.27.177.113 {
+		import rev
+	}
+}
+
+# 其他 github.com 子域 → 备用 IP 池
+https://*.github.com {
+	reverse_proxy * https://140.82.114.5 https://140.82.114.6 https://20.205.243.168 https://20.207.73.85 {
+		import rev
+	}
+}
