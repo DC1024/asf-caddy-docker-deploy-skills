@@ -119,9 +119,13 @@ docker exec asf caddy reload --config /app/Caddyfile
 
 ## 致谢
 
-- **上游项目**：[sffxzzp/asfcn](https://github.com/sffxzzp/asfcn) —— ASF + Caddy 一体化镜像的本体
-- **ASF 本体**：[JustArchiNET/ArchiSteamFarm](https://github.com/JustArchiNET/ArchiSteamFarm)
-- **反代方案**：[caddyserver/caddy](https://github.com/caddyserver/caddy)
+本 Skill 建立在以下开源项目之上，致敬所有作者：
+
+- **ASF 本体**：[JustArchiNET/ArchiSteamFarm](https://github.com/JustArchiNET/ArchiSteamFarm) —— 核心挂卡程序
+- **上游镜像**：[sffxzzp/asfcn](https://github.com/sffxzzp/asfcn) —— ASF + Caddy 一体化镜像的本体，本 Skill 的部署对象
+- **反代方案**：[caddyserver/caddy](https://github.com/caddyserver/caddy) —— 反代服务器，负责 Steam/GitHub 域名转发
+- **反代思路**：[qingdog/Steamcommunity_302](https://github.com/qingdog/Steamcommunity_302)（Dogfight360 的 S302）—— 本 Skill 反代思路的灵感来源
+- **远程工具依赖**：[paramiko/paramiko](https://github.com/paramiko/paramiko) —— `scripts/ssh_remote.py` 使用的 Python SSH 库
 
 本仓库仅在上述项目基础上做 Skill 化封装与 Caddyfile 修复，不重新分发任何上游二进制或镜像。
 
