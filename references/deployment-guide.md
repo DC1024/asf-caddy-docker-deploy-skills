@@ -138,10 +138,10 @@ asfcn 镜像默认 IPC 密码是 `asfcnasfcn`（所有使用者一样），**务
 | `FarmingPreferences` | 挂卡策略 | `3`（挂全部可挂卡） |
 | `Paused` | 暂停挂卡 | `false` |
 
-示例 `DC.json`：
+示例 `mybot.json`：
 ```json
 {
-  "SteamLogin": "dcchen",
+  "SteamLogin": "your_steam_username",
   "SteamPassword": "你的Steam密码",
   "Enabled": true,
   "FarmingPreferences": 3
@@ -149,7 +149,7 @@ asfcn 镜像默认 IPC 密码是 `asfcnasfcn`（所有使用者一样），**务
 ```
 
 **注意事项**：
-- **多个账号**：多建几个 json 即可（`DC.json`、`alt.json`...），ASF 自动为每个文件起一个 bot
+- **多个账号**：多建几个 json 即可（`mybot.json`、`alt.json`...），ASF 自动为每个文件起一个 bot
 - **明文密码风险**：`SteamPassword` 是明文的，此文件**只留在服务器本地**，绝不要进 skill、进 git、或对外分享
 - 建好 json 后重启容器（`docker restart asf`）让 ASF 加载新 bot
 - 若之前迁移过旧配置，直接复用已有 `<bot>.json` 和 `<bot>.db`（免重新验证令牌）
