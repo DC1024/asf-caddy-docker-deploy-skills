@@ -1,5 +1,7 @@
 # ASF + Caddy Docker Deploy · WorkBuddy Skill
 
+[English](README.en.md) | **中文**
+
 > **本项目是 [sffxzzp/asfcn](https://github.com/sffxzzp/asfcn) 的 AI Skill 化封装** ——
 > 镜像、反代架构与 Caddy 配置原型均来自 asfcn 上游项目，本仓库仅在其基础上：
 > 1. 把部署流程封装成可被 AI Agent 调用的 **WorkBuddy Skill**；
@@ -35,11 +37,11 @@ AI 助手会自动加载本 Skill，然后按 `SKILL.md` 里的流程，**调用
 
 ## 它解决什么问题
 
-用 `sffxzzp/asfcn` 一体化镜像（ASF + Caddy 反代）在 Docker 上部署 ASF，内置 Steam 社区与 GitHub 反代，使 ASF 在 CN 网络下能正常工作。
+用 `sffxzzp/asfcn` 一体化镜像（ASF + Caddy 反代）在 Docker 上部署 ASF，内置 Steam 社区与 GitHub 反代，使 ASF 在受限网络环境下也能正常工作。
 
 ### 为什么需要反代
 
-- CN 网络对 `store.steampowered.com`、`steamcommunity.com` 做 **SNI 检测阻断**（直连返回 000）
+- 部分网络环境会对 `store.steampowered.com`、`steamcommunity.com` 做 **SNI 检测阻断**（直连返回 000）
 - asfcn 镜像把 Steam/GitHub 域名写入容器 `/etc/hosts` 指向 127.0.0.1，让它们走容器内 Caddy 反代
 - Caddy 监听 443，用自签证书反代到 Akamai edgesuite 节点和 GitHub IP
 
@@ -50,7 +52,8 @@ AI 助手会自动加载本 Skill，然后按 `SKILL.md` 里的流程，**调用
 ```
 asf-caddy-docker-deploy-skills/
 ├── SKILL.md                      # Skill 入口（AI 读这个决定怎么执行）
-├── README.md                     # 你正在看的这个
+├── README.md                     # 中文说明（你正在看的这个）
+├── README.en.md                  # English version
 ├── assets/                       # AI 调用时直接复制/改写的产物文件
 │   ├── Caddyfile                 #   修复版反代配置（核心产出）
 │   └── docker-compose.yml        #   asfcn 一体化 compose 模板
@@ -120,4 +123,4 @@ docker exec asf caddy reload --config /app/Caddyfile
 
 ## 许可证
 
-MIT
+与上游 [sffxzzp/asfcn](https://github.com/sffxzzp/asfcn) 保持一致：上游项目未声明开源协议，本仓库亦不另行声明。本仓库仅做 Skill 化封装与 Caddyfile 修复，不重新分发任何上游二进制或镜像。
