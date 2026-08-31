@@ -1,5 +1,9 @@
 # ASF + Caddy Docker Deploy · WorkBuddy Skill
 
+![License: MIT](https://img.shields.io/badge/license-MIT-green)
+![GitHub Stars](https://img.shields.io/github/stars/DC1024/asf-caddy-docker-deploy-skills?style=social)
+![Last Commit](https://img.shields.io/github/last-commit/DC1024/asf-caddy-docker-deploy-skills)
+
 [English](README.en.md) | **中文**
 
 > **本项目是 [sffxzzp/asfcn](https://github.com/sffxzzp/asfcn) 的 AI Skill 化封装** ——
