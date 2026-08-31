@@ -1,5 +1,5 @@
 # ASF (ArchiSteamFarm) + Caddy 反代 一体化部署 compose
-# 镜像: sffxzzp/asfcn (amd64), CN 友好, 走阿里云源
+# 镜像: sffxzzp/asfcn (amd64), 走阿里云源, 国内可达
 #   registry.cn-hangzhou.aliyuncs.com/sffxzzp/asfcn:latest
 #
 # 关键点:
