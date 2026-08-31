@@ -119,9 +119,13 @@ docker exec asf caddy reload --config /app/Caddyfile
 
 ## Acknowledgements
 
-- **Upstream project**: [sffxzzp/asfcn](https://github.com/sffxzzp/asfcn) — the ASF + Caddy all-in-one image
-- **ASF itself**: [JustArchiNET/ArchiSteamFarm](https://github.com/JustArchiNET/ArchiSteamFarm)
-- **Reverse proxy**: [caddyserver/caddy](https://github.com/caddyserver/caddy)
+This Skill is built on the following open-source projects — credit to all their authors:
+
+- **ASF itself**: [JustArchiNET/ArchiSteamFarm](https://github.com/JustArchiNET/ArchiSteamFarm) — the core card-farming program
+- **Upstream image**: [sffxzzp/asfcn](https://github.com/sffxzzp/asfcn) — the ASF + Caddy all-in-one image this Skill deploys
+- **Reverse proxy**: [caddyserver/caddy](https://github.com/caddyserver/caddy) — the reverse proxy handling Steam/GitHub domain forwarding
+- **Reverse-proxy inspiration**: [qingdog/Steamcommunity_302](https://github.com/qingdog/Steamcommunity_302) (Dogfight360's S302) — the inspiration for this Skill's reverse-proxy approach
+- **Remote-tool dependency**: [paramiko/paramiko](https://github.com/paramiko/paramiko) — the Python SSH library used by `scripts/ssh_remote.py`
 
 This repository only does Skill packaging and a Caddyfile fix on top of the projects above; it does not redistribute any upstream binaries or images.
 
