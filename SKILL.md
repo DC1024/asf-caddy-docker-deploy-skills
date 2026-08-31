@@ -68,7 +68,7 @@ docker restart asf
 }
 ```
 - Steam 密码是**明文**存在此文件，必须留在服务器本地，**切勿放入 skill 或分享**
-- 多个账号就建多个 json，如 `DC.json`、`alt.json`
+- 多个账号就建多个 json，如 `mybot.json`、`alt.json`
 - 建好后重启容器让 ASF 加载新 bot
 
 ### Step 6 — 验证
