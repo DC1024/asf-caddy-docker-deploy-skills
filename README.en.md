@@ -11,8 +11,6 @@
 > 1. Wraps the deployment workflow into a **WorkBuddy Skill** that AI agents can invoke;
 > 2. Ships a fixed `Caddyfile` (fixes the Akamai 400 / bot disconnect caused by asfcn's built-in config);
 > 3. Adds a docker-compose template, an SSH remote script, and a complete troubleshooting guide.
->
-> **Credit to upstream**: all core capabilities belong to the [`sffxzzp/asfcn`](https://github.com/sffxzzp/asfcn) author 🙏.
 
 ---
 
