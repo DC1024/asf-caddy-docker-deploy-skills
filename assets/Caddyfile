@@ -15,7 +15,7 @@
 	header_up Host {host}
 }
 
-# Steam 社区 / 商店 / API → Akamai edgesuite 反代 (绕过 CN SNI 阻断)
+# Steam 社区 / 商店 / API → Akamai edgesuite 反代 (绕过 SNI 阻断)
 https://steamcommunity.com, https://www.steamcommunity.com, https://cdn.steamcommunity.com, https://store.steampowered.com, https://api.steampowered.com {
 	import sign
 	reverse_proxy * https://steamuserimages-a.akamaihd.net.edgesuite.net https://steamstore-a.akamaihd.net.edgesuite.net https://eaassets-a.akamaihd.net.edgesuite.net https://steamcommunity-a.akamaihd.net.edgesuite.net {
