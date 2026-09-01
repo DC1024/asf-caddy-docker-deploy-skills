@@ -19,6 +19,7 @@ Akamai 400 反复 Disconnected。
 - 需要 steam302 / steamcommunity_302 反代让 ASF 正常工作
 - 迁移已有 ASF 配置（bot、数据库）到新机器
 - ASF bot 反复 Disconnected，怀疑是反代/Akamai 问题
+- 用户不想拉新镜像升级 ASF（镜像有定制改动，如修复版 Caddyfile），要启用 ASF 内部自更新
 
 ## 部署流程
 
@@ -77,6 +78,43 @@ docker restart asf
 - 容器内 curl `https://steamcommunity.com` 返回 200（非 400）
 - ASF-ui 可访问 `http://<host>:1242`，用自己设置的 IPC 密码登录
 
+### Step 7 — 启用 ASF 自更新（推荐，避免拉新镜像升级）
+asfcn 镜像若被 watchtower / 手动 pull 换成新版本，自定义改动（修复版 Caddyfile 等）会被覆盖。
+正确做法：**镜像固定，升级交给 ASF 内部自动更新**（它从 GitHub 下载新版替换自己的程序文件）。
+
+**① 持久化 `/asf` 程序目录（关键前提）**
+ASF 程序本体在 `/asf`（镜像内约 51M）。自更新写入的文件若留在容器可写层，容器一重建就丢，
+必须 bind mount 到宿主机。compose volumes 增加：
+```yaml
+- /path/to/asf/asf:/asf
+```
+首次挂载需先把容器内 `/asf` 复制到宿主机再重建：
+```bash
+docker cp asf:/asf /path/to/asf/asf
+docker compose up -d --force-recreate
+```
+
+**② 配置自动更新** — 编辑 `config/ASF.json`：
+```json
+{
+  "AutoUpdates": true,
+  "UpdatePeriod": 24,
+  "UpdateCheckingPeriod": 24,
+  "UpdateChannel": 0
+}
+```
+- `UpdatePeriod`：更新检查周期（小时），`24` = 每 24 小时自动检查 GitHub 新版
+- `UpdateChannel`：`0` = Stable 稳定版通道，不建议切实验版
+- 改完 `docker restart asf` 生效
+
+**③ 验证自更新链路**：
+```bash
+# IPC 确认自更新能力（CanUpdate/AutoRestart/UpdatePeriod）
+curl -H "X-ApiKey: <IPCPassword>" http://<host>:1242/api/asf | grep -E 'CanUpdate|AutoRestart|UpdatePeriod'
+# 手动触发一次检查；已是最新版会拒绝（返回 "≥ V"），证明检查-比较链路完整
+curl -X POST -H "Content-Type: application/json" -H "X-ApiKey: <IPCPassword>" http://<host>:1242/api/asf/update
+```
+
 ## 关键踩坑点（务必读）
 
 1. **Akamai 400 → bot 反复断连**：asfcn 内置 Caddyfile 的 `(rev)` 段没设 `header_up Host`，
@@ -87,6 +125,10 @@ docker restart asf
 4. **无 sshpass 的 Windows 本机**：用 paramiko 连远程（`scripts/ssh_remote.py`）。
 5. **docker exec 找不到脚本**：用 `docker exec -i <c> sh -c "echo <b64> | base64 -d | sh"`。
 6. **paramiko 超时**：curl/du 等耗时命令加 `--max-time`，或分步执行。
+7. **ASF 自更新三个前提**：①`/asf` 必须持久化挂载（否则自更新文件随容器重建丢失）；②Caddyfile
+   需含 `github.com` 反代段——entrypoint 把 github.com 劫持到 127.0.0.1，ASF 更新下载全靠本地
+   Caddy 反代出去，hosts 劫持 + 反代缺一不可；③IPC 触发更新必须带 `Content-Type: application/json`
+   头（否则返回 415）。
 
 ## Resources
 

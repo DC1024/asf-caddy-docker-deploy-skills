@@ -11,6 +11,8 @@
 > 1. Wraps the deployment workflow into a **WorkBuddy Skill** that AI agents can invoke;
 > 2. Ships a fixed `Caddyfile` (fixes the Akamai 400 / bot disconnect caused by asfcn's built-in config);
 > 3. Adds a docker-compose template, an SSH remote script, and a complete troubleshooting guide.
+>
+> **Credit to upstream**: all core capabilities belong to the [`sffxzzp/asfcn`](https://github.com/sffxzzp/asfcn) author 🙏.
 
 ---
 
@@ -104,6 +106,47 @@ Copy `assets/Caddyfile` and `assets/docker-compose.yml` to the target machine, a
 docker compose up -d
 docker exec asf caddy reload --config /app/Caddyfile
 ```
+
+---
+
+## 🔄 Upgrading: Fixed Image + ASF Self-Update (Recommended)
+
+**Do NOT upgrade with `docker compose pull`** — the asfcn image bundles ASF and Caddy together, so
+pulling a new image replaces the whole container and wipes your customizations (including the fixed
+Caddyfile). Instead, enable ASF's built-in auto-update:
+
+1. **Persist the `/asf` program directory** (critical prerequisite — otherwise self-updates are lost
+   when the container is recreated):
+   ```bash
+   docker cp asf:/asf /path/to/asf/asf        # copy the program dir out before first mount
+   ```
+   Then add `- /path/to/asf/asf:/asf` to the volumes in `docker-compose.yml` and run `docker compose up -d --force-recreate`.
+
+2. **Enable self-update in ASF.json**:
+   ```json
+   {
+     "AutoUpdates": true,
+     "UpdatePeriod": 24,
+     "UpdateCheckingPeriod": 24,
+     "UpdateChannel": 0
+   }
+   ```
+   `UpdatePeriod: 24` = check GitHub for new versions every 24 hours; `UpdateChannel: 0` = stable channel.
+   Restart to apply: `docker restart asf`.
+
+3. **Trigger a manual check** (returns `V6.x.x.x ≥ V` and refuses when already latest — proves the chain works):
+   ```bash
+   curl -X POST -H "Content-Type: application/json" -H "X-ApiKey: <IPCPassword>" \
+     http://<host>:1242/api/asf/update
+   ```
+
+From then on, ASF checks every 24 hours → downloads new versions to the host-mounted `/asf` →
+auto-restarts to apply. **The image never changes**, so the Caddyfile / config / farming data
+survive every upgrade.
+
+> Network note: ASF update downloads go through `github.com`; the Caddyfile in this repo already
+> includes the GitHub reverse-proxy snippet, which works with the image entrypoint's hosts hijack —
+> verified working under CN network conditions (see deployment-guide §6).
 
 ---
 

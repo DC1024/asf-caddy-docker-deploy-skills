@@ -158,7 +158,67 @@ asfcn 镜像默认 IPC 密码是 `asfcnasfcn`（所有使用者一样），**务
 Skill 和镜像**都不提供** Steam 账号密码、bot 名、IPC 自定义密码的默认值——这些 100% 由使用者自己填。
 镜像只提供一个通用 IPC 默认密码 `asfcnasfcn`，强烈建议改掉。
 
-## 6. 验证清单
+## 6. 更新机制：镜像固定 + ASF 内部自更新（推荐）
+
+> 适用场景：镜像被改过（如本 skill 的修复版 Caddyfile）、或不想每次升级都拉新镜像。
+> 原理：ASF 本体自带 `AutoUpdates`，能从 GitHub 下载新版并替换自身程序文件；
+> 镜像固定不动，所有定制永久保留。
+
+### 6.1 为什么不能直接拉新镜像
+asfcn 镜像把 ASF + Caddy 打包在一起，`pull :latest` 换新镜像会**整层覆盖**容器，
+修复版 Caddyfile 等定制全部丢失。而 ASF 自更新只替换 `/asf` 下的程序文件，
+不碰 Caddyfile、config、plugins。
+
+### 6.2 第一步：持久化 `/asf` 程序目录（关键前提）
+ASF 程序本体在容器内 `/asf`（约 51M，非 `/app`）。自更新下载的新程序写入 `/asf`，
+若只在容器可写层，容器一重建就丢。必须 bind mount：
+
+```yaml
+volumes:
+  - /path/to/asf/asf:/asf
+```
+
+首次挂载先复制容器内目录到宿主机（源目录须为空或不存在）：
+```bash
+docker cp asf:/asf /path/to/asf/asf
+docker compose up -d --force-recreate
+```
+
+### 6.3 第二步：配置 ASF.json 启用自更新
+编辑 `config/ASF.json`：
+```json
+{
+  "AutoUpdates": true,
+  "UpdatePeriod": 24,
+  "UpdateCheckingPeriod": 24,
+  "UpdateChannel": 0
+}
+```
+| 字段 | 作用 | 建议值 |
+|------|------|--------|
+| `AutoUpdates` | 总开关，允许自更新 | `true` |
+| `UpdatePeriod` | 更新检查周期（小时） | `24`（每天查一次） |
+| `UpdateCheckingPeriod` | 更新检查前置周期 | 与 `UpdatePeriod` 相同 |
+| `UpdateChannel` | 更新通道，`0`=Stable `1`=Experimental | `0`（稳定版） |
+
+改完 `docker restart asf` 生效。
+
+### 6.4 第三步：验证自更新链路
+```bash
+# ① IPC 确认能力位 (CanUpdate=true, AutoRestart=true, UpdatePeriod=24)
+curl -H "X-ApiKey: <IPCPassword>" http://<host>:1242/api/asf | grep -E 'CanUpdate|AutoRestart|UpdatePeriod'
+# ② 手动触发检查（已是最新版会返回 "V6.x.x.x ≥ V" 拒绝，证明链路完整）
+curl -X POST -H "Content-Type: application/json" -H "X-ApiKey: <IPCPassword>" http://<host>:1242/api/asf/update
+```
+注意：IPC 触发更新**必须带 `Content-Type: application/json` 头**，否则返回 415。
+
+### 6.5 自更新的网络链路（CN 环境实测可用）
+- ASF 更新检查走 `api.github.com`（容器内可直连）
+- 新版下载走 `github.com`：entrypoint 把 github.com 劫持到 127.0.0.1 → 容器内 Caddy 443 反代 → GitHub IP
+- 前提：Caddyfile 含 `github.com` 反代段（本 skill 的 `assets/Caddyfile` 已含）；hosts 劫持 + Caddy 反代缺一不可
+- 实测：GitHub API 直连 0.55s，下载 1.68s，链路通畅
+
+## 7. 验证清单
 
 | 检查项 | 方法 | 期望 |
 |--------|------|------|
@@ -172,7 +232,7 @@ Skill 和镜像**都不提供** Steam 账号密码、bot 名、IPC 自定义密�
 | raw.githubusercontent | 容器内 curl | 301（偶发 000，待观察） |
 | ASF-ui | 浏览器 `http://<host>:1242` | 200，可登录 |
 
-## 7. 已知局限
-- `raw.githubusercontent.com` 反代偶发不稳定（一次 000 一次 301）。若 ASF 设 `UpdatePeriod=0`
-  禁用自动更新则影响不大；需要拉 GitHub 内容时再调整。
+## 8. 已知局限
+- `raw.githubusercontent.com` 反代偶发不稳定（一次 000 一次 301）。ASF 自更新（走 github.com）
+  不受影响；需要拉 raw.githubusercontent 内容时再调整。
 - 自签证书，浏览器访问 ASF-ui 之外的 https 反代站点会提示不安全（正常）。

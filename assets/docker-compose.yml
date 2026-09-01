@@ -1,5 +1,5 @@
 # ASF (ArchiSteamFarm) + Caddy 反代 一体化部署 compose
-# 镜像: sffxzzp/asfcn (amd64), 走阿里云源, 国内可达
+# 镜像: sffxzzp/asfcn (amd64), CN 友好, 走阿里云源
 #   registry.cn-hangzhou.aliyuncs.com/sffxzzp/asfcn:latest
 #
 # 关键点:
@@ -7,6 +7,8 @@
 #     github.com 写入容器 /etc/hosts 指向 127.0.0.1, 让这些域名走本地 Caddy 反代
 #   - 默认 IPC 密码: asfcnasfcn (改 config/IPC.config)
 #   - /app/Caddyfile 必须 bind mount 持久化, 否则 entrypoint 每次覆盖内置文件
+#   - /asf 是 ASF 程序本体目录, bind mount 持久化后即可启用 ASF 内部自更新
+#     (AutoUpdates + UpdatePeriod), 镜像固定不再拉新, 定制永不丢失 (见 SKILL.md Step 7)
 #
 # 端口:
 #   1242  = ASF-ui / IPC (用户名默认 ASF, 密码见 IPC.config)
@@ -26,4 +28,6 @@ services:
       - /path/to/asf/logs:/app/logs
       - /path/to/asf/plugins:/app/plugins
       - /path/to/asf/Caddyfile:/app/Caddyfile
+      # ASF 程序目录: 持久化后 ASF 自更新不随容器重建丢失 (首次挂载先 docker cp asf:/asf <路径>)
+      - /path/to/asf/asf:/asf
     restart: unless-stopped

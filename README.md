@@ -11,6 +11,8 @@
 > 1. 把部署流程封装成可被 AI Agent 调用的 **WorkBuddy Skill**；
 > 2. 沉淀一份修复版 `Caddyfile`（解决 asfcn 内置配置导致 Akamai 400 / bot 断连的问题）；
 > 3. 补齐 docker-compose 模板、SSH 远程脚本与完整排障指南。
+>
+> **致敬上游**：所有核心能力归功于 [`sffxzzp/asfcn`](https://github.com/sffxzzp/asfcn) 作者 🙏。
 
 ---
 
@@ -104,6 +106,43 @@ docker pull registry.cn-hangzhou.aliyuncs.com/sffxzzp/asfcn:latest
 docker compose up -d
 docker exec asf caddy reload --config /app/Caddyfile
 ```
+
+---
+
+## 🔄 升级方式：镜像固定 + ASF 内部自更新（推荐）
+
+**不要用 `docker compose pull` 升级**——asfcn 镜像把 ASF 与 Caddy 打包在一起，换新镜像会
+整层覆盖容器，修复版 Caddyfile 等定制全部丢失。正确做法是启用 ASF 自带的自动更新：
+
+1. **持久化 `/asf` 程序目录**（关键前提，否则自更新成果随容器重建丢失）：
+   ```bash
+   docker cp asf:/asf /path/to/asf/asf        # 首次挂载先复制容器内程序目录
+   ```
+   并在 `docker-compose.yml` 的 volumes 增加 `- /path/to/asf/asf:/asf`，然后 `docker compose up -d --force-recreate`。
+
+2. **配置 ASF.json 启用自更新**：
+   ```json
+   {
+     "AutoUpdates": true,
+     "UpdatePeriod": 24,
+     "UpdateCheckingPeriod": 24,
+     "UpdateChannel": 0
+   }
+   ```
+   `UpdatePeriod: 24` = 每 24 小时自动检查 GitHub 新版；`UpdateChannel: 0` = 稳定版通道。
+   改完 `docker restart asf` 生效。
+
+3. **手动触发一次检查**（已是最新版会返回 `V6.x.x.x ≥ V` 拒绝，证明链路完整）：
+   ```bash
+   curl -X POST -H "Content-Type: application/json" -H "X-ApiKey: <IPCPassword>" \
+     http://<host>:1242/api/asf/update
+   ```
+
+之后 ASF 每 24 小时自动检查 → 有新版自动下载到宿主机 `/asf` → 自动重启生效。
+**镜像永远不动**，Caddyfile / config / 挂卡数据都不会因升级丢失。
+
+> 网络前提：ASF 更新下载走 `github.com`，本仓库 Caddyfile 已含 github 反代段，
+> 配合镜像 entrypoint 的 hosts 劫持，CN 环境下链路实测通畅（详见 deployment-guide §6）。
 
 ---
 
